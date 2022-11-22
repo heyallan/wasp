@@ -123,7 +123,7 @@ button, input[type=button], input[type=submit] {
 }
 
 button, input, textarea {
-  color: #172b4d !important;
+  color: #172b4d;
   font-size: 14px !important;
   font-weight: 400;
 }
