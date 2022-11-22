@@ -1,8 +1,9 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 
 import SignupForm from '@wasp/auth/forms/Signup'
 import signup from '@wasp/auth/signup.js'
+import login from '@wasp/auth/login.js'
 
 import { GoogleSignInButton, googleSignInUrl } from '@wasp/auth/buttons/Google'
 import addWaspSourceHeader from './addWaspSourceHeader.js'
@@ -23,17 +24,33 @@ const inputClasses = `
 
 const SignupPage = (props) => {
 
-  const handleSignup = async (event) => {
+  const history = useHistory()
 
+  const [usernameFieldVal, setUsernameFieldVal] = useState('')
+  const [passwordFieldVal, setPasswordFieldVal] = useState('')
+
+  const handleSignup = async (event) => {
+    event.preventDefault()
+    try {
+      await signup({ username: usernameFieldVal, password: passwordFieldVal })
+      await login (usernameFieldVal, passwordFieldVal)
+
+      setUsernameFieldVal('')
+      setPasswordFieldVal('')
+
+      // Redirect to configured page, defaults to /.
+      history.push('/')
+    } catch (err) {
+      console.log(err)
+      window.alert(err)
+    }
   }
 
   return (
     <div className="auth-root-container">
-
       <img alt="Waspello" className="main-logo" src={mainLogo} />
 
       <div className="auth-form-container">
-
         {/* Custom auth form */}
         <div className='w-full text-center'>
             <h2 className='text-base font-bold text-neutral-600'>
@@ -44,11 +61,15 @@ const SignupPage = (props) => {
               className={inputClasses + ' mt-5'}
               type='text'
               placeholder='Enter email address'
+              value={usernameFieldVal}
+              onChange={e => setUsernameFieldVal(e.target.value)}
             />
             <input
               className={inputClasses + ' mt-4'}
               type='password'
               placeholder='Enter password'
+              value={passwordFieldVal}
+              onChange={e => setPasswordFieldVal(e.target.value)}
             />
             <input
               className={`
